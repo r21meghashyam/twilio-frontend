@@ -1,0 +1,73 @@
+@import url('https://fonts.googleapis.com/css?family=Quicksand&display=swap');
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox */
+input[type=number] {
+  -moz-appearance:textfield;
+}
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: #EEE;
+  opacity: 1; /* Firefox */
+  font-size: 20px;
+}
+
+
+.app{
+  display:flex;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+
+.app input{
+  border:0px;
+  outline:none;
+  border-bottom: 1px solid #999;
+  font-size: 3em;
+  padding:10px;
+  letter-spacing: 5px;
+  min-width: 300px;
+  text-align: center;
+  color:#aaa;
+  font-family: 'Quicksand', sans-serif;
+}
+
+.plus{
+  font-size: 3em;
+  color:#aaa;
+}
+
+.button{
+  margin:100px;
+  font-size: 3em;
+  color:#eee;
+  background-color: #5A5;
+  border:0px;
+  outline:none;
+  border-radius: 50%;
+  height:80px;
+  width:80px;
+  vertical-align: middle;
+  transition: background-color 0.3s;
+  cursor: pointer;
+}
+.button.call{
+  background: #5A5;
+}
+.button.cut{
+  background: #A55;
+}
+
+.button.call:hover{
+  background-color:#1A1;
+}
+
+.button.cut:hover{
+  background-color:#A11;
+}
