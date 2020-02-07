@@ -6,7 +6,7 @@ class App extends Component {
   SERVER = "https://cerner-twilio.herokuapp.com/token";
   state={
     status:'Not ready',
-    action:'call'
+    action:'disabled'
   }
   constructor(props){
     super(props);
@@ -21,27 +21,37 @@ class App extends Component {
     const response = await fetch(this.SERVER);
     const json = await response.json();
     const token = json.token;
-    Device.setup(token);
+    Device.setup(token,{region:"us1"});
     Device.on('ready',(device)=> {
       this.setState({status:'Ready'})
     });
     Device.on('error',(error)=> {
-      this.setState({status:'Error Occured',action:'call'})
+      this.setState({status:'Error Occured',action:'call',endTime:Date.now()},()=>{
+        console.log((this.state.endTime-this.state.startTime)/1000);
+      })
       console.log(error)
     });
     Device.on('connect',()=> {
-      this.setState({status:'Connected'})
+      this.setState({status:'Connected',startTime:Date.now()})
     });
     Device.on('disconnect',()=> {
-      this.setState({status:'Disconnected',action:'call'})
+      this.setState({status:'Disconnected',action:'call',endTime:Date.now()},()=>{
+        console.log((this.state.endTime-this.state.startTime)/1000);
+      })
+      
     });
 
     
   }
   updatePhoneNumber(event){
-    this.setState({phoneNumber:'+'+[event.target.value]});
+    let action = event.target.value.length>4?"call":"disabled";
+    this.setState({phoneNumber:'+'+[event.target.value],action});
   }
   async callPhone(){
+    if(this.state.action==="disabled"){
+      this.setState({status:"Enter valid phone number."})
+      return;
+    }
     if(this.state.action==='call')
       Device.connect({phoneNumber:this.state.phoneNumber});
     else
