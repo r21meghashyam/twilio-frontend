@@ -9,31 +9,32 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify';
 import Select from 'react-select'
 
+//dummy data
+const workflowItems=[
+  {
+    workIssueName: 'Insurance',
+    workIssueStatus: 'Pending',
+    type: 'Claim',
+    contact: '+918123928667'
+  },
+  {
+    workIssueName: 'RandomWorkIssue2',
+    workIssueStatus: 'Pending',
+    type: 'Encounter',
+    contact: '+918884026263'
+  },
+  {
+    workIssueName: 'RandomWorkIssue3',
+    workIssueStatus: 'Pending',
+    type: 'Claim',
+    contact: '+919886515308'
+  },
+]
 
 class App extends Component {
   SERVER = "https://cerner-twilio.herokuapp.com/token";
-  TWILIO_LOADING = 'Loading...';
+
   state = {
-    data: [
-      {
-        workIssueName: 'Insurance',
-        workIssueStatus: 'Pending',
-        type: 'Claim',
-        contact: '+918123928667'
-      },
-      {
-        workIssueName: 'RandomWorkIssue2',
-        workIssueStatus: 'Pending',
-        type: 'Encounter',
-        contact: '+918884026263'
-      },
-      {
-        workIssueName: 'RandomWorkIssue3',
-        workIssueStatus: 'Pending',
-        type: 'Claim',
-        contact: '+919886515308'
-      },
-    ],
     twilioDeviceIsReady: false,
     twilioTokenIsSetup: false,
     callConnected: false,
@@ -84,8 +85,6 @@ class App extends Component {
           toast(error.twilioError.causes.join(" "), { type: "error", toastId: 31003 })
           return;
         }
-        //Device.disconnectAll();
-        //console.log(error)
       });
       Device.on('connect', () => {
 
@@ -136,6 +135,12 @@ class App extends Component {
     else
       return '';
   }
+  search(){
+
+  }
+  clear(){
+
+  }
   render() {
     //console.log(this.state.twilioStatus)
     return (<div className="app">
@@ -169,10 +174,10 @@ class App extends Component {
           </div>
         </div>
         <div className="row actions">
-          <button>
+          <button onClick={this.search}>
             <FontAwesomeIcon icon="search"></FontAwesomeIcon> Search
             </button>
-          <button>
+          <button onClick={this.clear}>
             <FontAwesomeIcon icon="eraser"></FontAwesomeIcon> Clear
             </button>
         </div>
@@ -189,7 +194,7 @@ class App extends Component {
           </thead>
           <tbody>
             {
-              this.state.data.map((data, index) => <tr key={index}>
+              workflowItems.map((data, index) => <tr key={index}>
                 <td>{index + 1}</td>
                 <td>{data.workIssueName}</td>
                 <td>{data.workIssueStatus}</td>
