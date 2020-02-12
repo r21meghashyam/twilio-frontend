@@ -8,27 +8,34 @@ input::-webkit-inner-spin-button {
 /* Firefox */
 input[type=number] {
   -moz-appearance:textfield;
+  border-color:#2d799c;
 }
 ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
   color: #EEE;
   opacity: 1; /* Firefox */
   font-size: 20px;
 }
+*{
+  font-family: sans-serif;
+}
 
-
+body{
+  background-color: #eee;
+}
 .app{
   display:flex;
   height: 100vh;
   justify-content: center;
   align-items: center;
   flex-direction: column;
+ margin:50px;
 }
 
 
-.app input{
+.app .input input{
   border:0px;
   outline:none;
-  border-bottom: 1px solid #999;
+  border-bottom: 1px solid #2d799c;
   font-size: 3em;
   padding:10px;
   letter-spacing: 5px;
@@ -43,31 +50,119 @@ input[type=number] {
   color:#aaa;
 }
 
-.button{
-  margin:100px;
-  font-size: 3em;
+.call-button{
+  display: inline-block;
+  font-size: 1em;
   color:#eee;
   background-color: #555;
   border:0px;
   outline:none;
   border-radius: 50%;
-  height:80px;
-  width:80px;
+  padding:5px;
   vertical-align: middle;
   transition: background-color 0.3s;
   cursor: pointer;
 }
-.button.call{
+.call-button.call{
   background: #5A5;
 }
-.button.cut{
+.call-button.cut{
   background: #A55;
 }
 
-.button.call:hover{
+.call-button.call:hover{
   background-color:#1A1;
 }
 
-.button.cut:hover{
+.call-button.cut:hover{
   background-color:#A11;
+}
+
+
+table,td,th {
+  border:1px solid #2d799c;
+  border-collapse: collapse;
+  margin-top:10px;
+  padding:10px;
+  color:#555;
+}
+thead th{
+  background: #2d799c;
+  color:#fff;
+}
+
+select,input{
+  margin:5px;
+  padding:10px;
+  outline:none;
+  border:1px solid #2d799c;
+  border-radius:5px;
+  font-size: 16px;
+}
+
+.actions button{
+  background: #2d799c;
+  border:0px;
+  padding:10px 20px;
+  margin: 0px 20px;
+  color:#fff;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  outline:none;
+  border-radius: 5px;
+}
+.actions button:hover{
+  background-color: #2c5f77;
+}
+.row{
+  display: flex;
+  justify-content: space-between;
+  padding:20px;
+}
+.alignContentRight{
+  justify-content: flex-end;
+}
+
+.container{
+  background-color: #fff;
+  min-height: 90vh;
+  padding: 20px;
+  min-width: 800px;
+  display: flex;
+  flex-direction: column;
+  
+}
+.actions{
+  justify-content: space-around;
+}
+
+.center {
+  justify-content: center;
+}
+
+.inline{
+  display: inline-block;
+  min-width: 150px;
+  margin-left:10px;
+}
+
+.react-select__control,
+.react-select__control:hover {
+  border-color:#2d799c!important;
+  box-shadow: none!important;
+}
+
+@media screen and (max-width:800px){
+  .container{
+    min-width: auto;
+  }
+  .row{
+    flex-direction: column;
+    text-align: center;
+    padding:0px;
+  }
+  .actions button{
+    margin:10px;
+  }
+  
 }
