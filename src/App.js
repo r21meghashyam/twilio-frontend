@@ -33,6 +33,8 @@ const workflowItems=[
 
 class App extends Component {
   SERVER = "https://cerner-twilio.herokuapp.com/token";
+  SEARCH = "search";
+  SEARCHING = "searching....";
 
   state = {
     twilioDeviceIsReady: false,
@@ -40,8 +42,13 @@ class App extends Component {
     callConnected: false,
     callNumber: null,
     fetchingToken: false,
-    callingToastId: null
+    callingToastId: null,
+    searchBtnText:this.SEARCH
   };
+  constructor(props){
+    super(props);
+    this.search=this.search.bind(this);
+  }
   componentDidMount() {
     console.log("componentDidMount->init");
     this.init();
@@ -136,7 +143,7 @@ class App extends Component {
       return '';
   }
   search(){
-
+    this.setState({searchBtnText:this.SEARCHING});
   }
   clear(){
 
@@ -174,8 +181,8 @@ class App extends Component {
           </div>
         </div>
         <div className="row actions">
-          <button onClick={this.search}>
-            <FontAwesomeIcon icon="search"></FontAwesomeIcon> Search
+          <button onClick={this.search} className={this.state.searchBtnText===this.SEARCHING?'active':''}>
+            <FontAwesomeIcon icon="search"></FontAwesomeIcon> {this.state.searchBtnText}
             </button>
           <button onClick={this.clear}>
             <FontAwesomeIcon icon="eraser"></FontAwesomeIcon> Clear
