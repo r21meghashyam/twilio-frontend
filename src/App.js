@@ -4,13 +4,14 @@ import { faPhone, faCircleNotch } from '@fortawesome/fontawesome-free-solid'
 import { Device } from 'twilio-client';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import 'react-day-picker/lib/style.css';
-
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify';
 import Select from 'react-select'
+import monent from 'moment'
+import moment from 'moment';
 
 //dummy data
-const workflowItems=[
+const workflowItems = [
   {
     workIssueName: 'Insurance',
     workIssueStatus: 'Pending',
@@ -35,7 +36,14 @@ class App extends Component {
   SERVER = "https://cerner-twilio.herokuapp.com/token";
   SEARCH = "search";
   SEARCHING = "searching....";
-
+  OPTIONS = [
+    { value: "account", label: "Account" },
+    { value: "encounter", label: "Encounter" },
+    { value: "claim", label: "Claim" },
+    { value: "insurance", label: "Insurance" },
+    { value: "tenant", label: "Tenant" },
+    { value: "person", label: "Person" },
+  ]
   state = {
     twilioDeviceIsReady: false,
     twilioTokenIsSetup: false,
@@ -43,14 +51,19 @@ class App extends Component {
     callNumber: null,
     fetchingToken: false,
     callingToastId: null,
-    searchBtnText:this.SEARCH
+    searchBtnText: this.SEARCH,
+    beginingDate: '',
+    endingDate: '',
+    entityType: { value: '', label: '' }
   };
-  constructor(props){
+  constructor(props) {
     super(props);
-    this.search=this.search.bind(this);
+    this.search = this.search.bind(this);
+    this.clear = this.clear.bind(this);
+    this.handleDayChange = this.handleDayChange.bind(this);
+    this.handleSelectChange = this.handleSelectChange.bind(this);
   }
   componentDidMount() {
-    console.log("componentDidMount->init");
     this.init();
   }
   async init() {
@@ -58,23 +71,21 @@ class App extends Component {
       if (this.state.fetchingToken)
         return;
       await this.setState({ fetchingToken: true });
-      console.log("fetchingToken: true");
       const response = await fetch(this.SERVER);
       const json = await response.json();
       const token = json.token;
       Device.setup(token);
       await this.setState({ fetchingToken: false, twilioTokenIsSetup: true });
-      console.log("fetchingToken: false");
       Device.on('ready', (device) => {
-        console.log(device);
         this.setState({ twilioDeviceIsReady: true })
       });
       Device.on('error', (error) => {
-        
+        console.log(error)
+        if (error.code === 31208)
+          return toast("Please ensure you have given permission for this application to use the microphone",{type:"error",toastId:"microphoneDisabled"});
         if (error.code === 31204) {
           this.setState({ twilioTokenIsSetup: false, callConnected: false });
           Device.destroy();
-          console.log("31204->init");
           this.init();
           return;
         }
@@ -82,7 +93,6 @@ class App extends Component {
           this.setState({ twilioTokenIsSetup: false, callConnected: false });
           toast("You are either offline or your internet connection is two slow.", { type: "error", toastId: 31000 })
           Device.destroy();
-          console.log("31000->init");
           this.init();
           return;
         }
@@ -103,9 +113,7 @@ class App extends Component {
       });
     } catch (err) {
       await this.setState({ fetchingToken: false });
-      console.log("fetchingToken: false");
       setTimeout(() => {
-        console.log("setTimeout->init");
         this.init()
       }, 3000);
     }
@@ -121,7 +129,7 @@ class App extends Component {
     else {
       await this.setState({
         callConnected: true,
-        callNumber:number,
+        callNumber: number,
         callingToastId: toast(`Calling ${number}...`, { type: "success" }, { toastId: 2 })
       })
       Device.connect({ phoneNumber: number });
@@ -142,14 +150,36 @@ class App extends Component {
     else
       return '';
   }
-  search(){
-    this.setState({searchBtnText:this.SEARCHING});
-  }
-  clear(){
+  search() {
+    if (this.state.entityType.value === "")
+      return toast("Please select entity type", { type: "warning", toastId: "entityValidation" })
+    if (this.state.beginingDate === "")
+      return toast("Please select begining date", { type: "warning", toastId: "beginingDateValidation" })
+    if (this.state.endingDate === "")
+      return toast("Please select ending date", { type: "warning", toastId: "endingDateValidation" })
 
+
+    this.setState({ searchBtnText: this.SEARCHING },()=>{
+      setTimeout(()=>{
+        this.setState({searchBtnText:this.SEARCH})
+      },5000)
+    });
   }
+  clear() {
+    this.setState({
+      beginingDate: moment().format('MM/DD/Y'),
+      endingDate: moment().format('MM/DD/Y'),
+      entityType: { value: '', label: '' }
+    })
+  }
+  handleDayChange(name, date) {
+    this.setState({ [name]: moment(date).format('MM/DD/Y') })
+  }
+  handleSelectChange(e) {
+    this.setState({ entityType: e });
+  }
+  doNothing() { }
   render() {
-    //console.log(this.state.twilioStatus)
     return (<div className="app">
       <div className="container">
         <div className="row center">
@@ -158,37 +188,47 @@ class App extends Component {
         <div className="row">
           <div>
             <label>Entity Type:</label>
-           
-            <Select classNamePrefix="react-select" className="inline" options={[
-              {value:"account",label:"Account"},
-              {value:"encounter",label:"Encounter"},
-              {value:"claim",label:"Claim"},
-              {value:"insurance",label:"Insurance"},
-              {value:"tenant",label:"Tenant"},
-              {value:"person",label:"Person"},
-              ]} />
 
-         </div>
+            <Select
+              classNamePrefix="react-select"
+              className="inline"
+              value={this.state.entityType}
+              onChange={this.handleSelectChange}
+              options={this.OPTIONS} />
+
+          </div>
           <div>
             <label>Begining Date:</label>
-            <DayPickerInput />
+            <DayPickerInput
+              value={this.state.beginingDate}
+              onChange={this.dummy}
+              onDayChange={(date) => this.handleDayChange('beginingDate', date)}
+              placeholder={monent().format("MM/DD/Y")}
+            />
           </div>
         </div>
         <div className="row alignContentRight">
           <div>
             <label>Ending Date:</label>
-            <DayPickerInput />
+            <DayPickerInput
+              value={this.state.endingDate}
+              onDayChange={(date) => this.handleDayChange('endingDate', date)}
+              placeholder={monent().format("MM/DD/Y")} />
           </div>
         </div>
         <div className="row actions">
-          <button onClick={this.search} className={this.state.searchBtnText===this.SEARCHING?'active':''}>
+          <button 
+          onClick={this.search} 
+          className={this.state.searchBtnText === this.SEARCHING ? 'active' : ''}
+          disabled={this.state.searchBtnText === this.SEARCHING}
+          >
             <FontAwesomeIcon icon="search"></FontAwesomeIcon> {this.state.searchBtnText}
-            </button>
+          </button>
           <button onClick={this.clear}>
             <FontAwesomeIcon icon="eraser"></FontAwesomeIcon> Clear
             </button>
         </div>
-        <table>
+        <table className={this.state.searchBtnText === this.SEARCHING ? 'fade' : ''}>
           <thead>
             <tr>
               <th>Sl.</th>

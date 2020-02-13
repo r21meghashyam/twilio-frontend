@@ -78,7 +78,9 @@ body{
   background-color:#A11;
 }
 
-
+table{
+  transition: opacity 0.3s ease-in-out;
+}
 table,td,th {
   border:1px solid #2d799c;
   border-collapse: collapse;
@@ -154,6 +156,17 @@ select,input{
 .react-select__option:active,.react-select__option--is-selected{
   background-color: #2d799c!important;
   color:#FFF;
+}
+
+.DayPicker-Day--today{
+  color: #2c5f77!important;
+}
+.DayPicker-Day--selected:not(.DayPicker-Day--disabled):not(.DayPicker-Day--outside) {
+  background-color: #2d799c!important;
+}
+
+.fade{
+  opacity: 0.1;
 }
 
 @media screen and (max-width:800px){
